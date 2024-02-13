@@ -191,16 +191,16 @@ Before the models were trained and hyper-parameter tuned on the 10% dataset, a n
 
 | Model         | Train Time | F1 - Train      | F1 - Val        | F1 - Test | Balanced Accuracy - Train | Balanced Accuracy - Val | Balanced Accuracy - Test |
 | ------------- | ---------- | --------------- | --------------- | --------- | ------------------------- | ----------------------- | ------------------------ |
-| Baseline      | 0.40       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| LR - Simple   | 0.38       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| KNN - Default | 2.51       | 0.25 (+/- 0.00) | 0.19 (+/- 0.02) |           | 0.56 (+/- 0.00)           | 0.53 (+/- 0.01)         |                          |
-| LR - Default  | 0.73       | 0.00 (+/- 0.01) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| DT - Default  | 0.36       | 0.13 (+/- 0.03) | 0.04 (+/- 0.02) |           | 0.53 (+/- 0.01)           | 0.50 (+/- 0.00)         |                          |
-| SVM - Default | 69.94      | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
+| Baseline      | 0.06       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
+| LR - Simple   | 0.10       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
+| KNN - Default | 2.10       | 0.11 (+/- 0.02) | 0.08 (+/- 0.03) |           | 0.51 (+/- 0.00)           | 0.50 (+/- 0.01)         |                          |
+| LR - Default  | 0.17       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
+| DT - Default  | 0.09       | 0.02 (+/- 0.01) | 0.01 (+/- 0.01) |           | 0.51 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
+| SVM - Default | 16.98      | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
 
 Our goal is to have the model which has the F1 score greater than zero and the balanced accuracy score greater 50%. Given that the dataset is imbalanced, models with default options did not do any better than the "dummy" or baseline model.
 
-The table above also indicates that the most computationally expensive model is the SVM model, followed by KNN.
+The table above also indicates that the most computationally expensive model is the SVM model, followed by KNN. DT is the fastest, followed by LR.
 
 **Below is the result of the four models which were trained and validated on the 10% dataset:**
 
@@ -218,19 +218,21 @@ The table above also indicates that the most computationally expensive model is 
 
 ### **Fit Time and Score Curves on 10% of the Train dataset**
 
-The fit time and score time of the SVM model increased significantly with the number of samples. This exponential trend suggests that SVM is likely to be too computationally expensive for the full dataset.
+The train time of the SVM model increased significantly with the number of samples. This exponential trend suggests that SVM is likely to be too computationally expensive for the full dataset. In terms of scalability, SVM might not be the best choice for this dataset.
 
-![fig10](images/scalability.png)In addition, the score time of KNN is quite high. This is because the algorithm requires all points to be recalculated when scoring. In terms of scalability, LR and DT are better models for this dataset.
+In addition, the score time of KNN is quite high. This is because the algorithm requires all points to be recalculated when scoring. When adding samples, its speed will also be impacted.
+
+![fig10](images/scalability.png)
 
 ### **Model learning curves on 10% of the Train dataset**
 
-For KNN, LR and DT, the training scores are high with 100 samples and decrease when the number of samples increases whereas the validation scores are relatively flat. For SVM, both training and validation scores were low when the samples were less than 700. Then, the scores increased insignificantly when the number of samples were between 700 and 1900. After that, it stayed flat. SVM might not benefit from adding more samples because the train and validation scores converged and flatted out.
+For all four models, the training scores started high and decreased when the number of samples increased and converged to the validation scores. Therefore, all four models might not benefit much from adding more samples because the train and validation scores converged and relatively flatted out.
 
 ![fig11](images/learning_curves.png)
 
 ### **Scores, Confusion Matrix, Precision-Recall, ROC-AUC curves on 10% of the Test set**
 
-All performance measurements below illustrate that LR and DT provide the best performance on the 10% test set.
+The scoring table below illustratea that KNN is behind on the performance on the 10% test set while the scores of LR, DT and SVM are similar on the 10% test set. However, KNN and SVM are much more slower in terms of speed.
 
 | Model       | Train Time | F1 - Train      | F1 - Val        | F1 - Test | Balanced Accuracy - Train | Balanced Accuracy - Val | Balanced Accuracy - Test |
 | ----------- | ---------- | --------------- | --------------- | --------- | ------------------------- | ----------------------- | ------------------------ |
@@ -240,15 +242,19 @@ All performance measurements below illustrate that LR and DT provide the best pe
 | DT - 10pct  | 0.43       | 0.37 (+/- 0.01) | 0.36 (+/- 0.05) | 0.37      | 0.63 (+/- 0.01)           | 0.62 (+/- 0.06)         | 0.60                     |
 | SVM - 10pct | 341.62     | 0.38 (+/- 0.01) | 0.35 (+/- 0.06) | 0.37      | 0.64 (+/- 0.01)           | 0.61 (+/- 0.06)         | 0.60                     |
 
+The confusion matrix below shows that KNN was able to correcly classify a very small number of "subscribed" observerations and missed most of the "subscribed" observations. The other three models provided more decent predictions.
+
 ![fig12](images/confusionmatrix25.png)
+
+The Precision-Recall curves and ROC-AUC curves also shows that KNN is trailing behind. LR and DT take the leading position.
 
 ![fig13](images/compare25.png)
 
-**Given that, SVM and KNN were eliminated and LR and DT continued to be evaluated on the full 7-feature-dataset.**
+**Therefore, KNN was eliminated due to its low score and slow speed. While the score of SVM is similar with that of LR and DT, its speed is its drawback. SVM was also eliminated. LR and DT continued to be evaluated on the full 7-feature-dataset.**
 
 ### **5.2 Train and Select models on the full 7-feature-dataset**
 
-The scoring table below shows that LR and DT have similar performance.
+The scoring table below shows that LR and DT have similar performance. However, DT is much faster.
 
 | Model         | Train Time | F1 - Train      | F1 - Val        | F1 - Test | Balanced Accuracy - Train | Balanced Accuracy - Val | Balanced Accuracy - Test |
 | ------------- | ---------- | --------------- | --------------- | --------- | ------------------------- | ----------------------- | ------------------------ |
@@ -256,7 +262,13 @@ The scoring table below shows that LR and DT have similar performance.
 | **LR - Full** | **24.20**  | 0.40 (+/- 0.00) | 0.40 (+/- 0.02) | **0.40**  | 0.63 (+/- 0.00)           | 0.63 (+/- 0.02)         | **0.63**                 |
 | **DT - Full** | **5.67**   | 0.40 (+/- 0.00) | 0.39 (+/- 0.02) | **0.40**  | 0.63 (+/- 0.00)           | 0.62 (+/- 0.02)         | **0.63**                 |
 
+The confusion matrix below shows similar results. The number of observervations which the two models predicted correctly are very similar for both classes. 
+
 ![fig14](images/confusionmatrix_full.png)
+
+
+
+The similar performance is also shown in the Precision-Recall curves and the ROC-AUC curves.
 
 ![fig15](images/compare_full.png)
 
