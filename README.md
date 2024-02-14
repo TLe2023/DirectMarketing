@@ -212,18 +212,26 @@ The number of features was further reduced by performing recursive feature elimi
 ### **5.2 Train and Eliminate Models on 10% of the 7–feature-dataset**
 
 Before the models were trained and hyper-parameter tuned on the 10% dataset, a no-skill model was trained to obtain a baseline. In addition, a simple LR model was built with only the first two features selected during the feature selection process. Then, four models were built with default options on the full 7–feature–dataset. The results are depicted in the table below.
+
+
 ![scores1](images/scores_default.png)
+
+
 
 Our goal is to have the model which has the F1 score greater than zero and the balanced accuracy score greater 50%. Given that the dataset is imbalanced, models with default options did not do any better than the "dummy" or baseline model.
 
 The table above also indicates that the most computationally expensive model is the SVM model, followed by KNN. DT is the fastest, followed by LR.
 
+
+
 **Below is the result of the four models which were trained and validated on the 10% dataset:**
+
+
 ![scores2](images/scores_10pct.png)
 
-**Scores:** The scoring table above shows that KNN has the lowest validation score. LR, DT and SVM have similar validation score.
+**Scores:** The scoring table above shows that KNN has the lowest validation score. LR, DT and SVM have similar validation scores.
 
-**Speed:** DT is the fastest, followed by LR.
+**Speed:** DT is the fastest, followed by LR. The train time for SVM increased significantly.
 
 ### **Fit Time and Score Curves on 10% of the Train dataset**
 
@@ -241,25 +249,37 @@ For all four models, the training scores started high and decreased when the num
 
 ### **Scores, Confusion Matrix, Precision-Recall, ROC-AUC curves on 10% of the Test set**
 
-The scoring table below illustratea that KNN is behind on the performance on the 10% test set while the scores of LR, DT and SVM are similar on the 10% test set. However, KNN and SVM are much more slower in terms of speed.
+The scoring table below illustrates that KNN is behind on the performance on the 10% test set while the scores of LR, DT and SVM are similar on the 10% test set. 
+
+
 
 ![scores3](images/scores_10pct_test.png)
+
+
 
 The confusion matrix below shows that KNN was able to correcly classify a very small number of "subscribed" observerations and missed most of the "subscribed" observations. The other three models provided more decent predictions.
 
 ![fig12](images/confusionmatrix25.png)
 
-The Precision-Recall curves and ROC-AUC curves also shows that KNN is trailing behind. LR and DT take the leading position.
+The Precision-Recall curves and ROC-AUC curves also shows that KNN is trailing behind. 
 
 ![fig13](images/compare25.png)
 
-**Therefore, KNN was eliminated due to its low score and slow speed. While the score of SVM is similar with that of LR and DT, its speed is its drawback. SVM was also eliminated. LR and DT continued to be evaluated on the full 7-feature-dataset.**
+**Therefore, KNN was eliminated due to its low score and slow speed. While the score of SVM is similar with that of LR and DT, its speed is its drawback. SVM was also eliminated (I tried SVM on the full dataset and it was not able to complete).**
+
+**LR and DT continued to be evaluated on the full 7-feature-dataset.**
 
 ### **5.2 Train and Select models on the full 7-feature-dataset**
 
-The scoring table below shows that LR and DT have similar performance. However, DT is much faster.
+The scoring table below shows that LR and DT have similar performance on the full 7-feature-dataset. However, DT is much faster.
+
+
 
 ![scores4](images/scores_full_test.png)
+
+The score of the DT is slightly lower because I choose to change min_impurity_decrease parmeter from loguniform(0.00001, 1) to loguniform(0.00005, 1) to simplify the tree structure.
+
+
 
 The confusion matrix below shows similar results. The number of observervations which the two models predicted correctly are very similar for both classes. 
 
@@ -283,26 +303,28 @@ One of the considerable benefits of DT is its ease of interpretation. The model 
 
 The above confusion matrix can be interpreted as follows:
 
-- In the test set, there are 589 positive or “subscribed” observations and the model correctly predicted 364 instances but missed 225 positive instances. 
+- In the test set, there are 589 positive or “subscribed” observations and the model correctly predicted 363 instances but missed 226 positive instances. 
 
-- Of 2,430 negative instances, it correctly classified 1,412 observations and incorrectly classified 1,018 observations.
+- Of 2,430 negative instances, it correctly classified 1,473 observations and incorrectly classified 957 observations.
 
 The scores are summarized in the classification report below:
 
 ![fig17](images/classification_report.png)
 
-**Visualize the tree**
+#### **Visualize the tree**
 
-Decision Trees model allows us to visualize the decision tree to know exactly what happened inside the model and how the model made predictions. A Decision Trees diagram can be used as a flow chart to predict with input data or features. Starting at the root note, we follow the decision path and pass through interior nodes to arrive at a leaf note for the prediction. The tree is visualized below.
+Decision Trees model allows us to visualize the decision tree to know exactly what happened inside the model and how the model made predictions. A Decision Tree diagram can be used as a flow chart to predict with input data or features. Starting at the root note, we follow the decision path and pass through interior nodes to arrive at a leaf note for the prediction. The tree is visualized below.
+
+
 
 ![fig18](images/tree.png)
 
-The tree shows at each step or each note which question was asked or which rule was used and how the answer would lead to the next step or node. The color of the boxes presents the class purity at the node: blue stands for ‘subscribed’ and orange represents ‘not subscribed’. The darker the color, the more pure the class is at that node. 
+The tree shows at each step or each node which question was asked or which rule was used and how the answer would lead to the next step or node. The color of the boxes presents the class purity at the node: blue stands for ‘subscribed’ and orange represents ‘not subscribed’. The darker the color, the more pure the class is at that node. 
 
-Each box or each node provide useful information. For example, at the root node or the top box, the algorithm tried all the possibilies to split and determined that the split with "default_no <=0.5" gives the lowest Gini impurity. Gini impurity is 0.5 because the number of "not subscribed" samples and "subcribed" samples are the same. In addition,
+Each box or each node provides useful information. For example, at the root node or the top box, the algorithm tried all the possibilies to split and determined that the split with "default_no <=0.5" gives the lowest Gini impurity. Gini impurity is 0.5 because the number of "not subscribed" samples and "subcribed" samples are the same. In addition,
 
 - There are 12,072 observations (‘samples=12,072’)
-- 'value = [6036.0, 6036.0]'' provides the repartition of these observersations between two possible classes. In this case, the numbers are the same: 6,036. In other nodes, the numbers in the ''value" array are float numbers (in stead of integer) because we asked the algorithm to adjust the calculation to account for the class imbalance
+- 'value = [6036.0, 6036.0]'' provides the repartition of these observersations between two possible classes. In this case, the numbers are the same: 6,036. In other nodes, the numbers in the ''value" array are float numbers (in stead of an integer) because the algorithm was asked to adjust the calculation to account for the class imbalance during the hyper-parameter tuning
 - ‘class = not subscribed’. This is the class predicted by the Decision Tree at the root node.
 
 The split is also illustrated in the decision boundary below:
@@ -313,28 +335,32 @@ The split is also illustrated in the decision boundary below:
 
 To identify which features are most predictive to the selected model, two techniques were used: impurity-based importance and permutation feature importance.
 
-The selected model is a tree-based model which allows us to obtain the feature importance directly from the model based on impurity or the mean decrease in impurity when building the tree. The top two features are **"default_no"** and **“education”**.
+The selected model is a tree-based model which allows us to obtain the feature importance directly from the model based on impurity or the mean decrease in impurity when building the tree. The top two features are **"default_no"** and **“loan_no”**.
 
 ![fig19](images/feature_importance_mdi.png)
 
 ### **6.3 Permutation feature importance**
 
-Permutation feature importance model inspection technique randomly shuffles a single feature value and consequently breaks the relationship between the feature and the target - price. The decrease in the model score indicates the level of dependency of the model to the feature and, therefore, how important the feature is to the model. Below are the results of permutation importance computed on both the trained set and the test set for the selected model. The top two features are **"default_no" and “education”**. The results are consistent with that of the impurity-based importance method.
+Permutation feature importance model inspection technique randomly shuffles a single feature value and consequently breaks the relationship between the feature and the target. The decrease in the model score indicates the level of dependency of the model to the feature and, therefore, how important the feature is to the model. Below are the results of permutation importance computed on both the train set and the test set for the selected model. The top two features are **"default_no" and “loan_no”**. 
+
+The results are consistent with that of the impurity-based importance method.
+
+
 
 ![fig20](images/permutation.png)
 
 Features that are important on the trained set but not on the test set might cause the model to overfit. The similarity of the feature importance ranking between those two plots, train and test, suggests that the selected model is not overfitting.
 
-In addition, when data contains strong multicollinear features, the results of permutation importance might be misleading in some cases. When a feature is permuted, the model can get the same information from the other correlated feature. Therefore, the performance of the model is not affected. This is not the case for the selected model because the permutation importance plot shows that permuting a feature drops the accuracy by 0.5. In addition, features which are strong collinear were paired and one of them was removed as part of the feature selection process.
+
 
 ## **7. Conclusion and Recommendations**
 
-To identify a predictive classification model, seven features related to the bank client information of the Portuguese bank direct marketing dataset was explored and transformed. Four models named K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models were built and validated. These models were evaluated with a set of pre-defined criteria. They are speed, ease of interpretation and performance metrics. The model with the highest quality, **Decision Trees**, was selected and inspected. The top two features that influenced the selected model the most are default_no (e.g. the client is not in the default status) and education.
+To identify a predictive classification model, seven features related to the bank client information of the Portuguese bank direct marketing dataset was explored and transformed. Four models named K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models were built and validated. These models were evaluated with a set of pre-defined criteria. They are **speed, ease of interpretation and performance metrics (F1 and Balanced Accuracy)**. The model with the highest quality, **Decision Trees**, was selected and inspected. The top two features that influenced the selected model the most are **default_no** (e.g. the client is not in the default status) and **loan_no** (e.g. the client does not have a loan). 
 
 **Next steps:**
 
-The project can be continued by further optimizing the performance of the models. Some examples are using all features of the original dataset and/or balancing the dataset before training the models.
+The project can be continued by further optimizing the performance of the model. Some examples are using all features of the original dataset and/or balancing the dataset before training the model.
 
 ## **8. Jupyter Notebook**
 
-Please refer to the [Used Car Jupiter Notebook](https://github.com/TLe2023/CarPricePrediction/blob/main/UsedCarPricePrediction.ipynb) for more information.
+Please refer to the [Direct Marketing Jupiter Notebook](https://github.com/TLe2023/DirectMarketing/blob/main/Bank_Direct_Marketing_7_features_Final.ipynb) for more information.
