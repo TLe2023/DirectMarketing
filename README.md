@@ -10,8 +10,7 @@ The business objective is to increase the effectiveness and efficiency of future
 
 The Cross-Industry Standard Process for Data Mining (CRISP-DM) framework is applied to guide this effort. The framework includes six phases: business understanding, data understanding, data preparation, modeling, evaluation, and deployment.
 
-<img title="" src="images/process.png" alt="fig1" data-align="left">
-
+![fig1](images/process.png)
 **Phases of the CRISP-DM Process Model for Data Mining**
 
 After understanding the business objectives, the collected data will be explored by using visualizations and probability distributions to form initial findings and hypothesis. Then, data will be cleaned and prepared to handle any integrity issues. Features will be engineered for modelling. Next, four predictive classification models will be built and fine-tuned with optimal parameters. They are **K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models** with a cross-validation method applied. Lastly, these models or classifiers will be compared so that the best model, based on a set of predefined criteria, will be identified, evaluated and recommended.
@@ -214,17 +213,11 @@ The number of features was further reduced by performing recursive feature elimi
 
 Before the models were trained and hyper-parameter tuned on the 10% dataset, a no-skill model was built to obtain a baseline. In addition, a simple LR model was built with only the first two features selected during the feature selection process. Then, four models were built with default options. These models were built on the full 7–feature–dataset. The results are depicted in the table below.
 
- 
-
 ![scores1](images/scores_default.png)
-
- 
 
 Our goal is to have the model which has the F1 score greater than zero and the balanced accuracy score greater 50%. Given that the dataset is imbalanced, models with default options did not do any better than the "dummy" or baseline model.
 
 The table above also indicates that the most computationally expensive model is the SVM model, followed by KNN. DT is the fastest, followed by LR.
-
- 
 
 **Below is the result of the four models which were trained (with hyper-parameter tuning) and validated on the 10% dataset:**
 
@@ -252,17 +245,11 @@ The training scores started high and decreased when the number of samples increa
 
 The scoring table below illustrates that KNN is behind on the performance on the 10% test set while the scores of LR, DT and SVM are similar on the 10% test set. 
 
- 
-
 ![scores3](images/scores_10pct_test.png)
-
- 
 
 The confusion matrix below shows that KNN was able to correctly classify a very small number of "subscribed" observations and missed most of the "subscribed" observations. The other three models provided more decent predictions.
 
 ![fig12](images/confusionmatrix25.png)
-
- 
 
 The Precision-Recall curves and ROC-AUC curves also show that KNN is trailing behind. 
 
@@ -276,15 +263,9 @@ The Precision-Recall curves and ROC-AUC curves also show that KNN is trailing be
 
 The scoring table below shows that LR and DT have similar performance on the full 7-feature-dataset. However, DT is much faster.
 
- 
-
 ![scores4](images/scores_full_test.png)
 
-
-
 *Note: The score of the DT is slightly lower because I decided to change min_impurity_decrease parmeter from loguniform(0.00001, 1) to loguniform(0.00005, 1) to simplify the tree structure.*
-
- 
 
 The confusion matrix below shows similar results. The number of observations which the two models predicted correctly are very similar for both classes. It also presents the Precision and Recall trade-off. LR correctly classified more "subscribed" instances, but it also incorrectly classified more "not subscribed " instances as "subscribed" instanced. In contrast, DT missed more "subscribed" instances, but it made less mistakes on classifying "not subscribed" instances as "subscribed".
 
@@ -298,8 +279,6 @@ One of the considerable benefits of DT is its ease of interpretation. The model 
 
 **DT was selected for its performance, speed and ease of interpretation.**
 
- 
-
 ## **6. Evaluation**
 
 ## 6.1 Interpretation
@@ -308,9 +287,7 @@ One of the considerable benefits of DT is its ease of interpretation. The model 
 
 Decision Trees model allows us to visualize the decision tree to know exactly what happened inside the model and how the model made predictions. A Decision Tree diagram can be used as a flow chart to predict with input data or features. Starting at the root note, we follow the decision path and pass through interior nodes to arrive at a leaf note for the prediction. The tree is visualized below.
 
- 
-
-![fig18](file://C:\Users\ezmur\OneDrive\Documents\My codes\GitHub\DirectMarketing\images\tree.png?msec=1707925198293)
+![fig18](images/tree.png)
 
 The tree shows at each step or each node which question was asked, or which rule was used and how the answer would lead to the next step or node. The color of the boxes presents the class purity at the node: blue stands for ‘subscribed’ and orange represents ‘not subscribed’. The darker the color, the purer the class is at that node.
 
@@ -322,7 +299,7 @@ Each box or node provides useful information. For example, at the root node or t
 
 The split is also illustrated in the decision boundary below:
 
-![fig16b](file://C:\Users\ezmur\OneDrive\Documents\My codes\GitHub\DirectMarketing\images\decision_boundary.png?msec=1707925198266)
+![fig16b](images/decision_boundary.png)
 
 **Confustion Matrix**
 
@@ -351,8 +328,6 @@ The selected model is a tree-based model which allows us to obtain the feature i
 Permutation feature importance model inspection technique randomly shuffles a single feature value and consequently breaks the relationship between the feature and the target. The decrease in the model score indicates the level of dependency of the model to the feature and, therefore, how important the feature is to the model. Below are the results of permutation importance computed on both the train set and the test set for the selected model. The top two features are **"default_no" and “loan_no”**. 
 
 The results are consistent with that of the impurity-based importance method.
-
- 
 
 ![fig20](images/permutation.png)
 
