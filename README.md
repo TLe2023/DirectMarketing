@@ -104,7 +104,7 @@ The pie chart below illustrates that the success rate is only 11%. In other word
 ### **4.1 Data Cleaning and Selection**
 
 - **Removing features:** Only the first 7 features ('age', 'job', 'marital', 'education', 'default', 'housing', 'loan') and the target variable 'subscribed' were used for this project.
-- **Removing duplicate observations:** While there are twelve duplicate rows or observations in the original dataset, 26,097 duplicates were removed after the unused attributes were dropped. When using only 7 features related to client bank information, both the dimension and the number of samples or observations were reduced. The original dataset has more than 41,000 entries. As a client was possibly contacted multiple times throughout 17 campaigns from May 2008 and November 2010, client bank information attributes were recorded as duplicate entries in the original dataset. After removing features related to campaign interactions, socioeconomic and removing duplicate entries related to bank information, the number of entries reduced more than half, leaving approximately 15,000 observations in the dataset which are used for this project.
+- **Removing duplicate observations:** While there are twelve duplicate rows or observations in the original dataset, 26,097 duplicates were removed after the unused attributes were dropped. When using only 7 features related to client bank information, both the dimension and the number of samples or observations were reduced. The original dataset has more than 41,000 entries. As a client was possibly contacted multiple times throughout 17 campaigns from May 2008 and November 2010, bank client information attributes were recorded as duplicate entries in the original dataset. After removing features related to campaign interactions, socioeconomic and removing duplicate entries related to bank client information, the number of entries reduced more than half, leaving approximately 15,000 observations in the dataset which are used for this project.
 - **Handling “unknown” values:** Missing values were recorded as “unknown”. It was decided not to drop the data in order to minimize data loss; it was also decided not to impute but keep them as-is and used “unknown” as one of the categories of the features.
 - **Handling outliers:** Outliers were detected but were not removed and kept as-is.
 
@@ -112,32 +112,55 @@ The pie chart below illustrates that the success rate is only 11%. In other word
 
 To narrow the scope of this project, it was requested to only use the first 7 features which are related to bank client information. Therefore, only these attributes were transformed and used for the modeling.
 
-- **Feature encoding:** Given the “age” feature hypothesis derived from the data exploratory process, discretization was applied to this feature:
+#### **Feature encoding:**
+
+- **"Age" feature**: Given the “age” feature hypothesis derived from the data exploratory process (e.g. more senior / retired clients tend to subscribe to the offer), discretization was applied to this feature:
   
   - bins = [0, 30, 50, 60, infinity]
   
   - labels = ['early_career', 'mid_career', 'late_career', 'senior']
 
-Categorical features are encoded based on type (ordinal or nominal). Below is the list of ordinal categorical features and their encoded order:
+- **"Education" feature**: Categorical features are encoded based on type (ordinal or nominal). The "education" feature is considered as a norminal feature. Below is the encoded order of this feature:
 
-| **Ordinal Features** | **Values and Orders**                                                                                                  |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| education            | "unknown”, “illiterate", "basic.4y", "basic.6y", "basic.9y", "high.school", "professional.course", "university.degree" |
+| **Ordinal Feature** | **Value and Order**                                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| education           | "unknown”, “illiterate", "basic.4y", "basic.6y", "basic.9y", "high.school", "professional.course", "university.degree" |
 
-Nominal categorical features were encoded by using the one-hot encoding method although this method would increase the dimension of the dataset.
+- **Norminal feature**: Nominal categorical features were encoded by using the one-hot encoding method although this method would increase the dimension of the dataset.
 
-- **Scaling:** Data were scaled with the MinMaxScaler.
+#### **Scaling:**
+
+Data were scaled with the MinMaxScaler.
 
 ### 4.3. Correlation Matrix
 
-Based on the correlation matrix below, there is no feature that is strongly correlated with the target variable.
+Based on the correlation matrix below, there is no feature that is strongly correlated with the target variable and the top ten features are listed below. However, there are multicollinear features.
+
+    default_no                 0.2
+    default_unknown     0.2
+    education                  0.1
+    loan_no                      0.1
+    loan_yes                    0.1
+    job_retired                0.1
+    job_student               0.1
+    age_late_career        0.1
+    age_senior                 0.1
 
 ![fig9](images/corr_matrix.png)
 
 ### **4.4. Feature Selection**
 
-The dimension of the dataset was reduced by using only the first 7 features related to client bank information. In addition, different methods were explored to select the important transformed features and to reduce the dimension of the transformed dataset. Features selected by the hierarchy clustering method with 1 as the threshold were used to train the model. They are: **'education', 'default_no', 'default_yes', 'loan_no', 'loan_unknown', 'marital_divorced', 'marital_unknown', 'housing_no', 'job_retired', 'age_early_career'**.
-![fig10](images/feature_clustering.png)
+The dimension of the dataset was reduced by using only the first 7 features related to client bank information. However, after tranformation, the dimension of the transformed dataset is 30. Different methods were explored to select the important transformed features in order to reduce the dimension of the transformed dataset. 
+
+##### **Handle multicollinear features:**
+
+Features are hierarchically clustered on the Spearman rank-order correlations. Then, one was used as the threshold to pick a single feature from each cluster.
+
+Features selected by the hierarchy clustering method with 1 as the threshold are: **'education', 'default_no', 'default_yes', 'loan_no', 'loan_unknown', 'marital_divorced', 'marital_unknown', 'housing_no', 'job_retired', 'age_early_career'**.
+
+##### Recursive feature elimination with cross-validation:
+
+The number of features was further reduced by performing recursive feature elimination with cross-validation. Five features were selected. They are **'education', 'default_no', 'loan_no', 'marital_divorced', 'job_retired'.** These features were used to train the models.
 
 ## **5. Modeling**
 
@@ -188,29 +211,14 @@ The dimension of the dataset was reduced by using only the first 7 features rela
 ### **5.2 Train and Eliminate Models on 10% of the 7–feature-dataset**
 
 Before the models were trained and hyper-parameter tuned on the 10% dataset, a no-skill model was trained to obtain a baseline. In addition, a simple LR model was built with only the first two features selected during the feature selection process. Then, four models were built with default options on the full 7–feature–dataset. The results are depicted in the table below.
-
-| Model         | Train Time | F1 - Train      | F1 - Val        | F1 - Test | Balanced Accuracy - Train | Balanced Accuracy - Val | Balanced Accuracy - Test |
-| ------------- | ---------- | --------------- | --------------- | --------- | ------------------------- | ----------------------- | ------------------------ |
-| Baseline      | 0.06       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| LR - Simple   | 0.10       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| KNN - Default | 2.10       | 0.11 (+/- 0.02) | 0.08 (+/- 0.03) |           | 0.51 (+/- 0.00)           | 0.50 (+/- 0.01)         |                          |
-| LR - Default  | 0.17       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| DT - Default  | 0.09       | 0.02 (+/- 0.01) | 0.01 (+/- 0.01) |           | 0.51 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| SVM - Default | 16.98      | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
+![scores1](images/scores_default.png)
 
 Our goal is to have the model which has the F1 score greater than zero and the balanced accuracy score greater 50%. Given that the dataset is imbalanced, models with default options did not do any better than the "dummy" or baseline model.
 
 The table above also indicates that the most computationally expensive model is the SVM model, followed by KNN. DT is the fastest, followed by LR.
 
 **Below is the result of the four models which were trained and validated on the 10% dataset:**
-
-| Model       | Train Time | F1 - Train      | F1 - Val        | F1 - Test | Balanced Accuracy - Train | Balanced Accuracy - Val | Balanced Accuracy - Test |
-| ----------- | ---------- | --------------- | --------------- | --------- | ------------------------- | ----------------------- | ------------------------ |
-| Baseline    | 0.40       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| KNN - 10pct | 4.55       | 0.44 (+/- 0.02) | 0.27 (+/- 0.11) |           | 0.65 (+/- 0.01)           | 0.57 (+/- 0.05)         |                          |
-| LR - 10pct  | 0.71       | 0.36 (+/- 0.00) | 0.35 (+/- 0.06) |           | 0.62 (+/- 0.01)           | 0.61 (+/- 0.07)         |                          |
-| DT - 10pct  | 0.43       | 0.37 (+/- 0.01) | 0.36 (+/- 0.05) |           | 0.63 (+/- 0.01)           | 0.62 (+/- 0.06)         |                          |
-| SVM - 10pct | 341.62     | 0.38 (+/- 0.01) | 0.35 (+/- 0.06) |           | 0.64 (+/- 0.01)           | 0.61 (+/- 0.06)         |                          |
+![scores2](images/scores_10pct.png)
 
 **Scores:** The scoring table above shows that KNN has the lowest validation score. LR, DT and SVM have similar validation score.
 
@@ -233,14 +241,7 @@ For all four models, the training scores started high and decreased when the num
 ### **Scores, Confusion Matrix, Precision-Recall, ROC-AUC curves on 10% of the Test set**
 
 The scoring table below illustratea that KNN is behind on the performance on the 10% test set while the scores of LR, DT and SVM are similar on the 10% test set. However, KNN and SVM are much more slower in terms of speed.
-
-| Model       | Train Time | F1 - Train      | F1 - Val        | F1 - Test | Balanced Accuracy - Train | Balanced Accuracy - Val | Balanced Accuracy - Test |
-| ----------- | ---------- | --------------- | --------------- | --------- | ------------------------- | ----------------------- | ------------------------ |
-| Baseline    | 0.40       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| KNN - 10pct | 4.55       | 0.44 (+/- 0.02) | 0.27 (+/- 0.11) | 0.25      | 0.65 (+/- 0.01)           | 0.57 (+/- 0.05)         | 0.55                     |
-| LR - 10pct  | 0.71       | 0.36 (+/- 0.00) | 0.35 (+/- 0.06) | 0.37      | 0.62 (+/- 0.01)           | 0.61 (+/- 0.07)         | 0.60                     |
-| DT - 10pct  | 0.43       | 0.37 (+/- 0.01) | 0.36 (+/- 0.05) | 0.37      | 0.63 (+/- 0.01)           | 0.62 (+/- 0.06)         | 0.60                     |
-| SVM - 10pct | 341.62     | 0.38 (+/- 0.01) | 0.35 (+/- 0.06) | 0.37      | 0.64 (+/- 0.01)           | 0.61 (+/- 0.06)         | 0.60                     |
+![scores3](images/scores_10pct_test.png)
 
 The confusion matrix below shows that KNN was able to correcly classify a very small number of "subscribed" observerations and missed most of the "subscribed" observations. The other three models provided more decent predictions.
 
@@ -255,18 +256,10 @@ The Precision-Recall curves and ROC-AUC curves also shows that KNN is trailing b
 ### **5.2 Train and Select models on the full 7-feature-dataset**
 
 The scoring table below shows that LR and DT have similar performance. However, DT is much faster.
-
-| Model         | Train Time | F1 - Train      | F1 - Val        | F1 - Test | Balanced Accuracy - Train | Balanced Accuracy - Val | Balanced Accuracy - Test |
-| ------------- | ---------- | --------------- | --------------- | --------- | ------------------------- | ----------------------- | ------------------------ |
-| Baseline      | 0.40       | 0.00 (+/- 0.00) | 0.00 (+/- 0.00) |           | 0.50 (+/- 0.00)           | 0.50 (+/- 0.00)         |                          |
-| **LR - Full** | **24.20**  | 0.40 (+/- 0.00) | 0.40 (+/- 0.02) | **0.40**  | 0.63 (+/- 0.00)           | 0.63 (+/- 0.02)         | **0.63**                 |
-| **DT - Full** | **5.67**   | 0.40 (+/- 0.00) | 0.39 (+/- 0.02) | **0.40**  | 0.63 (+/- 0.00)           | 0.62 (+/- 0.02)         | **0.63**                 |
-
+![scores4](images/scores_full.png)
 The confusion matrix below shows similar results. The number of observervations which the two models predicted correctly are very similar for both classes. 
 
 ![fig14](images/confusionmatrix_full.png)
-
-
 
 The similar performance is also shown in the Precision-Recall curves and the ROC-AUC curves.
 
