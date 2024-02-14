@@ -14,7 +14,7 @@ The Cross-Industry Standard Process for Data Mining (CRISP-DM) framework is appl
 
 **Phases of the CRISP-DM Process Model for Data Mining**
 
-After understanding the business objectives, the collected data will be explored by using visualizations and probability distributions to form initial findings and hypothesis. Then, data will be cleaned and prepared to handle any integrity issues. Features will be engineered for modelling. Next, four predictive classification models will be built and fine-tuned with optimal parameters. They are **K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models** with a cross-validation method applied. Lastly, these models or classifiers will be compared so that the best model, based on a set of predefined criteria, will be identified and recommended.
+After understanding the business objectives, the collected data will be explored by using visualizations and probability distributions to form initial findings and hypothesis. Then, data will be cleaned and prepared to handle any integrity issues. Features will be engineered for modelling. Next, four predictive classification models will be built and fine-tuned with optimal parameters. They are **K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models** with a cross-validation method applied. Lastly, these models or classifiers will be compared so that the best model, based on a set of predefined criteria, will be identified, evaluated and recommended.
 
 Two datasets were used. Four models were trained on 10% of the imbalanced 7-feature-dataset to compare the performance and to eliminate two models. Then, the two remaining models were trained and assessed on the imbalanced full 7-feature-dataset. Finally, the best model was selected and interpreted.
 
@@ -69,7 +69,7 @@ Outliers present in features: age, duration, campaign, pdays, previous and cons.
 
 The name of the target “y” column is changed to “subscribed” for ease of reading.
 
-The pie chart below illustrates that the success rate is only 11%. In other words, the number of times when the bank contacted their clients who then subscribed to the bank term deposit was 11% of the total number of times the bank contacted the prospects.
+The pie chart below illustrates that the success rate is only 11%. In other words, of the total number of times the bank contacted prospects and presented the bank term deposit product over the phone, only 11% resulted in subscriptions.
 
 ![fig4](images/subscription_rate.png)
 
@@ -77,7 +77,6 @@ The pie chart below illustrates that the success rate is only 11%. In other word
 
 - Prospects tend to subscribe when they are over 60. However, observations concentrate at the age of 30-40 and people tend to accept less than reject at this age.
 - Acceptance concentrates at the first contact (campaign = 1)
-- Client who was not previously contacted is mostly not subscribed.
 - People tend to subscribe more when the employment variation rate is below zero or Euribor rate below 3 or number of employees is below 5,100.
 
 ![fig5](images/target_numeric_features_violinplot.png)
@@ -95,10 +94,10 @@ The pie chart below illustrates that the success rate is only 11%. In other word
 
 #### **3.2.5 Hypothesis**
 
-- For the bank client information attributes, it seems that people with higher education or are not in a defaulted status or more senior / retired tend to subscribe to the offer.
+- For the bank client information attributes, it seems that people with higher education or are not in a credit defaulted status or more senior / retired tend to subscribe to the offer.
 - Campaign interaction related attributes also contribute to the subscription outcome. While "duration" of a contact or call is considerably correlated with the subscription, this attribute, as mentioned in the dataset description, is not useful in building a predictive model because the call duration is not known before the contact. However, people tend to subscribe when the outcome of the previous campaign was successful (e.g. when they previously accepted the term deposit offer from the previous campaign).
 - Social and economic context attributes appear to play an important role in the term deposit acceptance rate. Prospects tend to accept the termed deposit offer when the number of employees is less than 5,100 or the Euribor rate is below 3, or employment variation rate is negative.
-- If only bank client information attributes are available for prediction or classification, the performance of the classification models might not be impressive. However, it should not impede the objective of this project which is to recommend a classification model.
+- If only bank client information attributes are available for prediction or classification for this project, the performance of the classification models might not be impressive. However, it should not impede the objective of this project which is to recommend a classification model.
 
 ## **4. Data Preparation**
 
@@ -106,7 +105,7 @@ The pie chart below illustrates that the success rate is only 11%. In other word
 
 - **Removing features:** Only the first 7 features ('age', 'job', 'marital', 'education', 'default', 'housing', 'loan') and the target variable 'subscribed' were used for this project.
 - **Removing duplicate observations:** While there are twelve duplicate rows or observations in the original dataset, 26,097 duplicates were removed after the unused attributes were dropped. When using only 7 features related to client bank information, both the dimension and the number of samples or observations were reduced. The original dataset has more than 41,000 entries. As a client was possibly contacted multiple times throughout 17 campaigns from May 2008 and November 2010, bank client information attributes were recorded as duplicate entries in the original dataset. After removing features related to campaign interactions, socioeconomic and removing duplicate entries related to bank client information, the number of entries reduced more than half, leaving approximately 15,000 observations in the dataset which are used for this project.
-- **Handling “unknown” values:** Missing values were recorded as “unknown”. It was decided not to drop the data in order to minimize data loss; it was also decided not to impute but keep them as-is and used “unknown” as one of the categories of the features.
+- **Handling “unknown” values:** Missing values were recorded as “unknown”. It was decided not to drop the data in order to minimize data loss; it was also decided not to impute but keep them as-is and used “unknown” as one of the categories of the categorical features.
 - **Handling outliers:** Outliers were detected but were not removed and kept as-is.
 
 ### **4.2. Data Transformation**
@@ -121,7 +120,7 @@ To narrow the scope of this project, it was requested to only use the first 7 fe
   
   - labels = ['early_career', 'mid_career', 'late_career', 'senior']
 
-- **"Education" feature**: Categorical features are encoded based on type (ordinal or nominal). The "education" feature is considered as a norminal feature. Below is the encoded order of this feature:
+- **"Education" feature**: Categorical features are encoded based on type (ordinal or nominal). The "education" feature is considered as a ordinal feature. Below is the encoded order of this feature:
 
 | **Ordinal Feature** | **Value and Order**                                                                                                    |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -135,7 +134,9 @@ Data were scaled with the MinMaxScaler.
 
 ### 4.3. Correlation Matrix
 
-Based on the correlation matrix below, there is no feature that is strongly correlated with the target variable and the top ten features are listed below. However, there are multicollinear features.
+Based on the correlation matrix below, there is no feature that is strongly correlated with the target variable and the top ten features are listed below. However, there are multicollinear features such as "job_retired" and "age_senior".
+
+Top features correlated to the target:
 
     default_no                 0.2
     default_unknown     0.2
@@ -155,7 +156,7 @@ The dimension of the dataset was reduced by using only the first 7 features rela
 
 ##### **Handle multicollinear features:**
 
-Features are hierarchically clustered on the Spearman rank-order correlations. Then, one was used as the threshold to pick a single feature from each cluster.
+Features are hierarchically clustered on the Spearman rank-order correlations. Then, one was picked as the threshold to select a single feature from each cluster.
 
 Features selected by the hierarchy clustering method with 1 as the threshold are: **'education', 'default_no', 'default_yes', 'loan_no', 'loan_unknown', 'marital_divorced', 'marital_unknown', 'housing_no', 'job_retired', 'age_early_career'**.
 
@@ -171,11 +172,11 @@ The number of features was further reduced by performing recursive feature elimi
 
 - **Cross-validation:** The dataset was split into trained set and test set. When splitting the dataset, the class proportion was preserved with the “stratify” option. The test set was held out for final evaluation. Train dataset was then split into smaller sets to train, tune hyper-parameters, and validate the models as part of the stratified k-fold cross-validation method.
 
-- **Hyperparameter tuning:** Instead of using the exhaustive and computationally expensive grid searching with GridSearchCV, randomized parameter optimization was used to tweak model performance for optimal results due to its speed.
+- **Hyperparameter tuning:** Instead of using the exhaustive and computationally expensive grid searching with GridSearchCV, randomized parameter optimization was used to tweak model performance for optimal results due to its fast speed.
 
 - **Model Selection Criteria:**
   
-  - **Model performance metrics:** The conventional and institutive accuracy score which is calculated by the number of correct predictions divided by the total number of predictions is not used because the dataset is imbalanced. If a “lazy” model were built and always predicted the majority class or negative class (“not subscribed” or “0”), the accuracy of this “lazy” model would be 89% because 89% of the observations in the dataset are “not subscribed”. Instead, other measuring metrices are used to evaluate the model performance. They are:
+  - **Model performance metrics:** The conventional and intuitive accuracy score which is calculated by the number of correct predictions divided by the total number of predictions is not used because the dataset is imbalanced. If a “lazy” model were built and always predicted the majority class or negative class (“not subscribed” or “0”), the accuracy of this “lazy” model would be 89% because 89% of the observations in the dataset are “not subscribed”. Instead, other measuring metrices are used to evaluate the model performance. They are:
     
     - **Balanced Accuracy**: The calculation of the accuracy score was adjusted to address the inflated performance due to the imbalanced data. The balanced accuracy score is calculated as the following:
       
@@ -203,27 +204,33 @@ The number of features was further reduced by performing recursive feature elimi
       
       Models were trained with a focus on the F1 score.
       
-      In addition to the Balanced Accuracy and F1 scores, the confusion matrix, the precision-recall curve and ROC-AUC (Receiver Operating Characteristic – Area Under Curve) were used during the evaluation process.
+      In addition to the Balanced Accuracy and F1 scores, the confusion matrix, the precision-recall curve and ROC-AUC (Receiver Operating Characteristic – Area Under Curve) were used to further analyze and evaluate the models.
   
   - **Other considerations:** In addition to the model performance metrics mentioned above, speed or train time and ease of interpretation were also considered when selecting the model.
 
-- **Dataset:** Some algorithms such as SVM are computationally expensive. Therefore, four models were trained and assessed on 10% of the 7-feature-dataset first. Fit time and score time curves as well as learning curves were plotted to facilitate the assessment. Then, two models were eliminated. The remaining two models were then trained and assessed on the full 7-feature-dataset. Lastly, the selected or recommended model was interpreted on the full 7-feature-dataset.
+- **Dataset:** Some algorithms such as SVM are computationally expensive. Therefore, four models were trained and assessed on 10% of the 7-feature-dataset first. Fit time and score time curves as well as learning curves were plotted to facilitate the assessment. Then, two models were eliminated. The remaining two models were then trained and assessed on the full 7-feature-dataset. Lastly, the selected was interpreted on the full 7-feature-dataset and recommended.
 
 ### **5.2 Train and Eliminate Models on 10% of the 7–feature-dataset**
 
-Before the models were trained and hyper-parameter tuned on the 10% dataset, a no-skill model was trained to obtain a baseline. In addition, a simple LR model was built with only the first two features selected during the feature selection process. Then, four models were built with default options on the full 7–feature–dataset. The results are depicted in the table below.
+Before the models were trained and hyper-parameter tuned on the 10% dataset, a no-skill model was built to obtain a baseline. In addition, a simple LR model was built with only the first two features selected during the feature selection process. Then, four models were built with default options. These models were built on the full 7–feature–dataset. The results are depicted in the table below.
+
+ 
 
 ![scores1](images/scores_default.png)
+
+ 
 
 Our goal is to have the model which has the F1 score greater than zero and the balanced accuracy score greater 50%. Given that the dataset is imbalanced, models with default options did not do any better than the "dummy" or baseline model.
 
 The table above also indicates that the most computationally expensive model is the SVM model, followed by KNN. DT is the fastest, followed by LR.
 
-**Below is the result of the four models which were trained and validated on the 10% dataset:**
+ 
+
+**Below is the result of the four models which were trained (with hyper-parameter tuning) and validated on the 10% dataset:**
 
 ![scores2](images/scores_10pct.png)
 
-**Scores:** The scoring table above shows that KNN has the lowest validation score. LR, DT and SVM have similar validation scores.
+**Scores:** The scoring table above shows that KNN has the lowest training and validation scores. LR, DT and SVM have similar training and validation scores.
 
 **Speed:** DT is the fastest, followed by LR. The train time for SVM increased significantly.
 
@@ -237,7 +244,7 @@ In addition, the score time of KNN is quite high. This is because the algorithm 
 
 ### **Model learning curves on 10% of the Train dataset**
 
-For all four models, the training scores started high and decreased when the number of samples increased and converged to the validation scores. Therefore, all four models might not benefit much from adding more samples because the train and validation scores converged and relatively flatted out.
+The training scores started high and decreased when the number of samples increased and converged to the validation scores. Therefore, all four models might not benefit much from adding more samples because the train and validation scores converged and relatively flatted out.
 
 ![fig11](images/learning_curves.png)
 
@@ -245,17 +252,23 @@ For all four models, the training scores started high and decreased when the num
 
 The scoring table below illustrates that KNN is behind on the performance on the 10% test set while the scores of LR, DT and SVM are similar on the 10% test set. 
 
+ 
+
 ![scores3](images/scores_10pct_test.png)
 
-The confusion matrix below shows that KNN was able to correcly classify a very small number of "subscribed" observerations and missed most of the "subscribed" observations. The other three models provided more decent predictions.
+ 
+
+The confusion matrix below shows that KNN was able to correctly classify a very small number of "subscribed" observations and missed most of the "subscribed" observations. The other three models provided more decent predictions.
 
 ![fig12](images/confusionmatrix25.png)
 
-The Precision-Recall curves and ROC-AUC curves also shows that KNN is trailing behind. 
+ 
+
+The Precision-Recall curves and ROC-AUC curves also show that KNN is trailing behind. 
 
 ![fig13](images/compare25.png)
 
-**Therefore, KNN was eliminated due to its low score and slow speed. While the score of SVM is similar with that of LR and DT, its speed is its drawback. SVM was also eliminated (I tried SVM on the full dataset and it was not able to complete).**
+**Therefore, KNN was eliminated due to its low score and slow speed. While the score of SVM is similar with that of LR and DT, its speed is its drawback. SVM was also eliminated. On a side note, I tried SVM on the full dataset and it was not able to complete.**
 
 **LR and DT continued to be evaluated on the full 7-feature-dataset.**
 
@@ -263,15 +276,21 @@ The Precision-Recall curves and ROC-AUC curves also shows that KNN is trailing b
 
 The scoring table below shows that LR and DT have similar performance on the full 7-feature-dataset. However, DT is much faster.
 
+ 
+
 ![scores4](images/scores_full_test.png)
 
-The score of the DT is slightly lower because I choose to change min_impurity_decrease parmeter from loguniform(0.00001, 1) to loguniform(0.00005, 1) to simplify the tree structure.
 
-The confusion matrix below shows similar results. The number of observervations which the two models predicted correctly are very similar for both classes. 
+
+*Note: The score of the DT is slightly lower because I decided to change min_impurity_decrease parmeter from loguniform(0.00001, 1) to loguniform(0.00005, 1) to simplify the tree structure.*
+
+ 
+
+The confusion matrix below shows similar results. The number of observations which the two models predicted correctly are very similar for both classes. It also presents the Precision and Recall trade-off. LR correctly classified more "subscribed" instances, but it also incorrectly classified more "not subscribed " instances as "subscribed" instanced. In contrast, DT missed more "subscribed" instances, but it made less mistakes on classifying "not subscribed" instances as "subscribed".
 
 ![fig14](images/confusionmatrix_full.png)
 
-The similar performance is also shown in the Precision-Recall curves and the ROC-AUC curves.
+A similar performance is also shown in the Precision-Recall curves and the ROC-AUC curves.
 
 ![fig15](images/compare_full.png)
 
@@ -279,9 +298,31 @@ One of the considerable benefits of DT is its ease of interpretation. The model 
 
 **DT was selected for its performance, speed and ease of interpretation.**
 
+ 
+
 ## **6. Evaluation**
 
 ## 6.1 Interpretation
+
+**Visualize the tree**
+
+Decision Trees model allows us to visualize the decision tree to know exactly what happened inside the model and how the model made predictions. A Decision Tree diagram can be used as a flow chart to predict with input data or features. Starting at the root note, we follow the decision path and pass through interior nodes to arrive at a leaf note for the prediction. The tree is visualized below.
+
+ 
+
+![fig18](file://C:\Users\ezmur\OneDrive\Documents\My codes\GitHub\DirectMarketing\images\tree.png?msec=1707925198293)
+
+The tree shows at each step or each node which question was asked, or which rule was used and how the answer would lead to the next step or node. The color of the boxes presents the class purity at the node: blue stands for ‘subscribed’ and orange represents ‘not subscribed’. The darker the color, the purer the class is at that node.
+
+Each box or node provides useful information. For example, at the root node or the top box, the algorithm tried all the possibilities to split and determined that the split with "default_no <=0.5" gives the lowest Gini impurity. Gini impurity is 0.5 because the number of "not subscribed" samples and "subscribed" samples are the same. In addition,
+
+- There are 12,072 observations (‘samples=12,072’)
+- 'value = [6036.0, 6036.0]'' provides the repartition of these observations between two possible classes. In this case, the numbers of samples in each class are the same: 6,036. In other nodes, the numbers in the ''value" array are float numbers (instead of an integer) because the algorithm was asked to adjust the calculation to account for the class imbalance during the hyper-parameter tuning
+- ‘class = not subscribed’. This is the class predicted by the Decision Tree at the root node.
+
+The split is also illustrated in the decision boundary below:
+
+![fig16b](file://C:\Users\ezmur\OneDrive\Documents\My codes\GitHub\DirectMarketing\images\decision_boundary.png?msec=1707925198266)
 
 **Confustion Matrix**
 
@@ -297,29 +338,11 @@ The scores are summarized in the classification report below:
 
 ![fig17](images/classification_report.png)
 
-#### **Visualize the tree**
-
-Decision Trees model allows us to visualize the decision tree to know exactly what happened inside the model and how the model made predictions. A Decision Tree diagram can be used as a flow chart to predict with input data or features. Starting at the root note, we follow the decision path and pass through interior nodes to arrive at a leaf note for the prediction. The tree is visualized below.
-
-![fig18](images/tree.png)
-
-The tree shows at each step or each node which question was asked or which rule was used and how the answer would lead to the next step or node. The color of the boxes presents the class purity at the node: blue stands for ‘subscribed’ and orange represents ‘not subscribed’. The darker the color, the more pure the class is at that node. 
-
-Each box or each node provides useful information. For example, at the root node or the top box, the algorithm tried all the possibilies to split and determined that the split with "default_no <=0.5" gives the lowest Gini impurity. Gini impurity is 0.5 because the number of "not subscribed" samples and "subcribed" samples are the same. In addition,
-
-- There are 12,072 observations (‘samples=12,072’)
-- 'value = [6036.0, 6036.0]'' provides the repartition of these observersations between two possible classes. In this case, the numbers are the same: 6,036. In other nodes, the numbers in the ''value" array are float numbers (in stead of an integer) because the algorithm was asked to adjust the calculation to account for the class imbalance during the hyper-parameter tuning
-- ‘class = not subscribed’. This is the class predicted by the Decision Tree at the root node.
-
-The split is also illustrated in the decision boundary below:
-
-![fig16b](images/decision_boundary.png)
-
 ### **6.2 Impurity-based importance**
 
 To identify which features are most predictive to the selected model, two techniques were used: impurity-based importance and permutation feature importance.
 
-The selected model is a tree-based model which allows us to obtain the feature importance directly from the model based on impurity or the mean decrease in impurity when building the tree. The top two features are **"default_no"** and **“loan_no”**.
+The selected model is a tree-based model which allows us to obtain the feature importance directly from the model based on impurity when building the tree. The top two features are **"default_no"** and **“loan_no”**.
 
 ![fig19](images/feature_importance_mdi.png)
 
@@ -329,13 +352,15 @@ Permutation feature importance model inspection technique randomly shuffles a si
 
 The results are consistent with that of the impurity-based importance method.
 
+ 
+
 ![fig20](images/permutation.png)
 
 Features that are important on the trained set but not on the test set might cause the model to overfit. The similarity of the feature importance ranking between those two plots, train and test, suggests that the selected model is not overfitting.
 
 ## **7. Conclusion and Recommendations**
 
-To identify a predictive classification model, seven features related to the bank client information of the Portuguese bank direct marketing dataset was explored and transformed. Four models named K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models were built and validated. These models were evaluated with a set of pre-defined criteria. They are **speed, ease of interpretation and performance metrics (F1 and Balanced Accuracy)**. The model with the highest quality, **Decision Trees**, was selected and inspected. The top two features that influenced the selected model the most are **default_no** (e.g. the client is not in the default status) and **loan_no** (e.g. the client does not have a loan). 
+To identify a predictive classification model, seven features related to the bank client information of the Portuguese bank direct marketing dataset was explored and transformed. Four models named K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models were built and validated. These models were evaluated with a set of pre-defined criteria. They are **speed, ease of interpretation and performance metrics (F1 and Balanced Accuracy)**. The model with the highest quality, **Decision Trees**, was selected and inspected. The top two features that influenced the selected model the most are **default_no** (e.g. the client is not in the credit default status) and **loan_no** (e.g. the client does not have a personal loan). 
 
 **Next steps:**
 
