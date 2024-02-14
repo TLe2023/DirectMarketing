@@ -10,7 +10,7 @@ The business objective is to increase the effectiveness and efficiency of future
 
 The Cross-Industry Standard Process for Data Mining (CRISP-DM) framework is applied to guide this effort. The framework includes six phases: business understanding, data understanding, data preparation, modeling, evaluation, and deployment.
 
-![fig1](images/process.png)
+<img src="images/process.png" title="" alt="fig1" data-align="center">
 
                          **Phases of the CRISP-DM Process Model for Data Mining**
 
@@ -90,6 +90,7 @@ The pie chart below illustrates that the success rate is only 11%. In other word
 - People are more likely to accept if they had previously accepted in the prior campaign.
 
 ![fig7](images/cat_countplot.png)
+
 ![fig8](images/cat_boxplot.png)
 
 #### **3.2.5 Hypothesis**
@@ -241,6 +242,7 @@ For all four models, the training scores started high and decreased when the num
 ### **Scores, Confusion Matrix, Precision-Recall, ROC-AUC curves on 10% of the Test set**
 
 The scoring table below illustratea that KNN is behind on the performance on the 10% test set while the scores of LR, DT and SVM are similar on the 10% test set. However, KNN and SVM are much more slower in terms of speed.
+
 ![scores3](images/scores_10pct_test.png)
 
 The confusion matrix below shows that KNN was able to correcly classify a very small number of "subscribed" observerations and missed most of the "subscribed" observations. The other three models provided more decent predictions.
@@ -256,7 +258,9 @@ The Precision-Recall curves and ROC-AUC curves also shows that KNN is trailing b
 ### **5.2 Train and Select models on the full 7-feature-dataset**
 
 The scoring table below shows that LR and DT have similar performance. However, DT is much faster.
-![scores4](images/scores_full.png)
+
+![scores4](images/scores_full_test.png)
+
 The confusion matrix below shows similar results. The number of observervations which the two models predicted correctly are very similar for both classes. 
 
 ![fig14](images/confusionmatrix_full.png)
@@ -279,13 +283,13 @@ One of the considerable benefits of DT is its ease of interpretation. The model 
 
 The above confusion matrix can be interpreted as follows:
 
-- In the test set, there are xx positive or “subscribed” observations and the model correctly predicted … instances but missed xxx positive instances. 
+- In the test set, there are 589 positive or “subscribed” observations and the model correctly predicted 364 instances but missed 225 positive instances. 
 
-- Of xxx negative instances, it correctly classified xxx observations and incorrectly classified xxx observations.
+- Of 2,430 negative instances, it correctly classified 1,412 observations and incorrectly classified 1,018 observations.
 
 The scores are summarized in the classification report below:
 
-![fig17](images/classificationreport.png)
+![fig17](images/classification_report.png)
 
 **Visualize the tree**
 
@@ -294,11 +298,20 @@ Decision Trees model allows us to visualize the decision tree to know exactly wh
 ![fig18](images/tree.png)
 
 The tree shows at each step or each note which question was asked or which rule was used and how the answer would lead to the next step or node. The color of the boxes presents the class purity at the node: blue stands for ‘subscribed’ and orange represents ‘not subscribed’. The darker the color, the more pure the class is at that node. 
-Based on the tree, the features that were used to make predictions are
 
-To identify which features are most predictive to the selected model, two techniques were used: impurity-based importance and permutation feature importance.
+Each box or each node provide useful information. For example, at the root node or the top box, the algorithm tried all the possibilies to split and determined that the split with "default_no <=0.5" gives the lowest Gini impurity. Gini impurity is 0.5 because the number of "not subscribed" samples and "subcribed" samples are the same. In addition,
+
+- There are 12,072 observations (‘samples=12,072’)
+- 'value = [6036.0, 6036.0]'' provides the repartition of these observersations between two possible classes. In this case, the numbers are the same: 6,036. In other nodes, the numbers in the ''value" array are float numbers (in stead of integer) because we asked the algorithm to adjust the calculation to account for the class imbalance
+- ‘class = not subscribed’. This is the class predicted by the Decision Tree at the root node.
+
+The split is also illustrated in the decision boundary below:
+
+![fig16b](images/decision_boundary.png)
 
 ### **6.2 Impurity-based importance**
+
+To identify which features are most predictive to the selected model, two techniques were used: impurity-based importance and permutation feature importance.
 
 The selected model is a tree-based model which allows us to obtain the feature importance directly from the model based on impurity or the mean decrease in impurity when building the tree. The top two features are **"default_no"** and **“education”**.
 
@@ -316,11 +329,11 @@ In addition, when data contains strong multicollinear features, the results of p
 
 ## **7. Conclusion and Recommendations**
 
-To identify a predictive classification model, seven features related to the bank client information of the Portuguese bank direct marketing dataset was explored and transformed. Four models named K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models were built and validated. These models were evaluated with a set of pre-defined evaluation metrics. They are speed, ease of interpretation and performance. The model with the highest quality was selected and inspected. The top two features that influenced the selected model the most are education and default_no (e.g. the client is not in the default status)
+To identify a predictive classification model, seven features related to the bank client information of the Portuguese bank direct marketing dataset was explored and transformed. Four models named K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models were built and validated. These models were evaluated with a set of pre-defined criteria. They are speed, ease of interpretation and performance metrics. The model with the highest quality, **Decision Trees**, was selected and inspected. The top two features that influenced the selected model the most are default_no (e.g. the client is not in the default status) and education.
 
 **Next steps:**
 
-The project can be continued by further optimizing the performance of the models. Some examples are using all features of the original dataset and/or balancing the dataset.
+The project can be continued by further optimizing the performance of the models. Some examples are using all features of the original dataset and/or balancing the dataset before training the models.
 
 ## **8. Jupyter Notebook**
 
