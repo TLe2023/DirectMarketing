@@ -12,10 +12,7 @@ The Cross-Industry Standard Process for Data Mining (CRISP-DM) framework is appl
 
 ![fig1](images/process.png)
 
-
 **Phases of the CRISP-DM Process Model for Data Mining**
-
-
 
 After understanding the business objectives, the collected data will be explored by using visualizations and probability distributions to form initial findings and hypothesis. Then, data will be cleaned and prepared to handle any integrity issues. Features will be engineered for modelling. Next, four predictive classification models will be built and fine-tuned with optimal parameters. They are **K-nearest Neighbors (KNN), Logistic Regression (LR), Decision Trees (DT), and Support Vector Machines (SVM) classification models** with a cross-validation method applied. Lastly, these models or classifiers will be compared so that the best model, based on a set of predefined criteria, will be identified, evaluated and recommended.
 
@@ -235,7 +232,7 @@ The table above also indicates that the most computationally expensive model is 
 
 The train time of the SVM model increased significantly with the number of samples. This exponential trend suggests that SVM is likely to be too computationally expensive for the full dataset. In terms of scalability, SVM might not be the best choice for this dataset.
 
-In addition, the score time of KNN is quite high. This is because the algorithm requires all points to be recalculated when scoring. When adding samples, its speed will also be impacted.
+In addition, the score time of KNN is quite high. This is because the algorithm requires recalculating and seaching through the whole dataset when classifying a new data point. When adding samples, its speed will also be impacted.
 
 ![fig10](images/scalability.png)
 
